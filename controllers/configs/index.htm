@@ -1,0 +1,223 @@
+<div class="control-tabs content-tabs" data-control="tab">
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#contentTabOne">Compile</a></li>
+    <li><a href="#contentTabTwo">webpack.config.js</a></li>
+    <li><a href="#contentTabThree">gulpfile.js</a></li>
+    <li><a href="#contentTabFour">package.json</a></li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane active">
+
+
+<input type="text" id="input" placeholder="Message…" />
+<hr />
+<pre id="output"></pre>
+
+<script>
+  var host   = 'ws://127.0.0.1:9889';
+  var socket = null;
+  var input  = document.getElementById('input');
+  var output = document.getElementById('output');
+  var print  = function (message) {
+      var samp       = document.createElement('samp');
+      samp.innerHTML = message + '\n';
+      output.appendChild(samp);
+
+      return;
+  };
+
+  input.addEventListener('keyup', function (evt) {
+      if (13 === evt.keyCode) {
+          var msg = input.value;
+
+          if (!msg) {
+              return;
+          }
+
+          try {
+              socket.send(msg);
+              input.value = '';
+              input.focus();
+          } catch (e) {
+              console.log(e);
+          }
+
+          return;
+      }
+  });
+
+  try {
+      socket = new WebSocket(host);
+      socket.onopen = function () {
+          print('connection is opened');
+          input.focus();
+
+          return;
+      };
+      socket.onmessage = function (msg) {
+          print(msg.data);
+
+          return;
+      };
+      socket.onclose = function () {
+          print('connection is closed');
+
+          return;
+      };
+  } catch (e) {
+      console.log(e);
+  }
+</script>
+
+
+      <div class="form-elements">
+        <div class="scoreboard">
+          <div data-control="toolbar">
+            <div class="scoreboard-item title-value">
+              <br>
+              <h4>Actions</h4>
+              <br>
+              <input type="button"
+                value="npm list"
+                class="btn btn-primary"
+                data-request="onNpmList"
+                data-request-update="stdout: '#result'"
+              >
+              <input type="button"
+                value="npm install"
+                class="btn btn-primary"
+                data-request="onNpmInstall"
+                data-request-update="stdout: '#result'"
+              >
+              <input type="button"
+                value="npm run dev"
+                class="btn btn-primary"
+                data-request="onNpmRunDev"
+                data-request-update="stdout: '#result'"
+              >
+            </div>
+          </div>
+        </div>
+        <div class="scoreboard">
+          <div data-control="toolbar">
+            <div class="scoreboard-item title-value">
+              <h4>stdout</h4>
+              <p class="description" id="result"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane">
+      <?= Form::ajax('onWebpackSave', ['class' => 'form-elements']) ?>
+        <div class="layout-row">
+          <div class="form-group">
+            <?= Form::textarea('file', $webpack, [
+              'class' => 'form-control',
+              'rows' => '25'
+            ]) ?>
+          </div>
+        </div>
+        <div class="form-buttons">
+          <div class="loading-indicator-container">
+            <button
+              type="submit"
+              data-request="onSave"
+              data-hotkey="ctrl+s, cmd+s"
+              data-load-indicator="<?= e(trans('backend::lang.form.saving')) ?>"
+              class="btn btn-primary"
+            ><?= e(trans('backend::lang.form.create')) ?></button>
+            <button
+              type="button"
+              data-request="onSave"
+              data-request-data="close:1"
+              data-hotkey="ctrl+enter, cmd+enter"
+              data-load-indicator="<?= e(trans('backend::lang.form.saving')) ?>"
+              class="btn btn-default"
+            ><?= e(trans('backend::lang.form.create_and_close')) ?></button>
+            <span class="btn-text">
+              <?= e(trans('backend::lang.form.or')) ?>
+              <a href="<?= Backend::url('defr/vuemanager/javascripts') ?>">
+                <?= e(trans('backend::lang.form.cancel')) ?>
+              </a>
+            </span>
+          </div>
+        </div>
+      <?= Form::close() ?>
+    </div>
+    <div class="tab-pane">
+      <?= Form::ajax('onGulpfileSave', ['class' => 'form-elements']) ?>
+        <div class="layout-row">
+          <div class="form-group">
+            <?= Form::textarea('file', $gulpfile, [
+              'class' => 'form-control',
+              'rows' => '20'
+            ]) ?>
+          </div>
+        </div>
+        <div class="form-buttons">
+          <div class="loading-indicator-container">
+            <button
+              type="submit"
+              data-request="onSave"
+              data-hotkey="ctrl+s, cmd+s"
+              data-load-indicator="<?= e(trans('backend::lang.form.saving')) ?>"
+              class="btn btn-primary"
+            ><?= e(trans('backend::lang.form.create')) ?></button>
+            <button
+              type="button"
+              data-request="onSave"
+              data-request-data="close:1"
+              data-hotkey="ctrl+enter, cmd+enter"
+              data-load-indicator="<?= e(trans('backend::lang.form.saving')) ?>"
+              class="btn btn-default"
+            ><?= e(trans('backend::lang.form.create_and_close')) ?></button>
+            <span class="btn-text">
+              <?= e(trans('backend::lang.form.or')) ?>
+              <a href="<?= Backend::url('defr/vuemanager/javascripts') ?>">
+                <?= e(trans('backend::lang.form.cancel')) ?>
+              </a>
+            </span>
+          </div>
+        </div>
+      <?= Form::close() ?>
+    </div>
+    <div class="tab-pane">
+      <?= Form::ajax('onPackageJsonSave', ['class' => 'form-elements']) ?>
+        <div class="layout-row">
+          <div class="form-group">
+            <?= Form::textarea('file', $packageJson, [
+              'class' => 'form-control',
+              'rows' => '25'
+            ]) ?>
+          </div>
+        </div>
+        <div class="form-buttons">
+          <div class="loading-indicator-container">
+            <button
+              type="submit"
+              data-request="onSave"
+              data-hotkey="ctrl+s, cmd+s"
+              data-load-indicator="<?= e(trans('backend::lang.form.saving')) ?>"
+              class="btn btn-primary"
+            ><?= e(trans('backend::lang.form.create')) ?></button>
+            <button
+              type="button"
+              data-request="onSave"
+              data-request-data="close:1"
+              data-hotkey="ctrl+enter, cmd+enter"
+              data-load-indicator="<?= e(trans('backend::lang.form.saving')) ?>"
+              class="btn btn-default"
+            ><?= e(trans('backend::lang.form.create_and_close')) ?></button>
+            <span class="btn-text">
+              <?= e(trans('backend::lang.form.or')) ?>
+              <a href="<?= Backend::url('defr/vuemanager/javascripts') ?>">
+                <?= e(trans('backend::lang.form.cancel')) ?>
+              </a>
+            </span>
+          </div>
+        </div>
+      <?= Form::close() ?>
+    </div>
+  </div>
+</div>
